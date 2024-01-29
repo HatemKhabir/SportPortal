@@ -15,6 +15,7 @@ const userSchema = mongoose.Schema({
   },
   reviews: {
     type: Map,
+    default:{},
     of: String,
   },
   record: {
