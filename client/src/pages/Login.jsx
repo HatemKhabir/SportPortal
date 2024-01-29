@@ -17,32 +17,16 @@ const Login = () => {
   const { setIsAuthenticated } = useContext(AuthContext)
   const { setLoggedInUsername,loggedInUsername } = useContext(UserContext) // Get the setLoggedInUsername function
 
-  const fetchUserData=async (value)=>{
-    try {
-      const response = await axios.get(`http://localhost:8080/api/users/profile?id=${value}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-      return response.data;
-      
-    } catch (error) {
-     alert("errors fetching user data")
-     return [];
-    }
-    }
-  
+
 
   //this logic runs when the component mounts (i.e., when it is initially rendered) and whenever any of the dependencies (setIsAuthenticated, navigate, or from) change
   useEffect(() => {
     async function fetch(){
     // Check if the user is already authenticated
     const authToken = localStorage.getItem("authToken")
-    const data=await fetchUserData(loggedInUsername)
     if (authToken) {
       setIsAuthenticated(true)
       navigate(from)
-      localStorage.setItem("friendsList",JSON.stringify(data.friendsList));
     }
   }
   fetch();
