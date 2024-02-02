@@ -187,6 +187,7 @@ setFormData({...formData,[e.target.name]:12})
       </form>
       {submissions.map((submission, index) => {
         return (
+          <div key={index} className="MatchCardContainer">
           <div key={index} className='match-card'>
             <h2>Event {index + 1}: {submission.eventTitle}</h2>
             <p>Host: {submission.hostUsername}</p>
@@ -197,6 +198,7 @@ setFormData({...formData,[e.target.name]:12})
             <p>Players Number : {submission.playersList.length} / {submission.playersNumber}</p>
             <button onClick={() => handleDelete(index, submission.matchID)}>Delete</button>
             <button onClick={()=>handleClick(index,submission.matchID)}>Submit Results</button>
+          </div>
           </div>
         )
       })

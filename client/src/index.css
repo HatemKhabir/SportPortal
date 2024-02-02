@@ -151,7 +151,10 @@ label{
   padding: 0.25rem 0.75rem;
   border-radius: 0.25rem;
 }
-
+.MatchCardContainer
+{
+  display: inline-flex;
+}
 .match-card {
   margin: 5rem 2rem;
   padding: 1.5rem;

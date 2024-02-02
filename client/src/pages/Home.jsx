@@ -12,6 +12,9 @@ const Home = () => {
       <Link to='/search-player'>
         <button>Look for Player</button>
       </Link>
+      <Link to='/friends'>
+        <button>Friends List</button>
+      </Link>
     </>
   )
 }

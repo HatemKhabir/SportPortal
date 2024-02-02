@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 
-import { Home, SignUp, Login, CreateEvent, JoinEvent, LookForPlayer,PlayerProfile } from "./pages"
+import { Home, SignUp, Login, CreateEvent, JoinEvent, LookForPlayer,PlayerProfile, FriendsList } from "./pages"
 import Header from "./components/Header"
 
 import { AuthProvider } from "./contexts/AuthContext"
@@ -42,6 +42,10 @@ function App() {
             <Route 
             path='/profile'
             element={<PlayerProfile/>}>
+            </Route>
+            <Route
+            path="/friends"
+            element={<FriendsList/>}> 
             </Route>
           </Routes>
         

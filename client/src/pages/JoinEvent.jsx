@@ -11,7 +11,9 @@ const JoinEvent = () => {
   //states for the modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
+  const [submissions, setSubmissions] = useState([])
   const navigate=useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -49,13 +51,25 @@ const JoinEvent = () => {
       try {
         const response=await axios.get("http://localhost:8080/api/events/join-event")
         console.log(response.data);
+        setSubmissions(response.data);        
       } catch (error) {
        console.log(error);
       }
     }
     fetchData();
-  },[])
-
+  },[]
+  )
+  const handleDelete = async (index,matchid) => {
+    try{
+      await axios.delete(`http://localhost:8080/api/events/create-event?matchID=${matchid}`).
+      then((response)=>console.log(response));  
+    }catch(error){
+      console.log(error);
+    }
+    const newSubmissions = [...submissions]
+    newSubmissions.splice(index, 1)
+    setSubmissions(newSubmissions)
+  }
   const closeModal = () => {
     setIsModalOpen(false)
   }
@@ -75,6 +89,24 @@ const JoinEvent = () => {
         <button onClick={navigateHome}>Back</button>
 
       </form>
+      {submissions.map((submission, index) => {
+        return (
+          <div key={index} className="MatchCardContainer">
+          <div key={index} className='match-card'>
+            <h2>Event {index + 1}: {submission.eventTitle}</h2>
+            <p>Host: {submission.hostUsername}</p>
+            <p>Location: {submission.location}</p>
+            <p>Date: {submission.date}</p>
+            <p>Time: {submission.time}</p>
+            <p>MatchId: {submission.matchID}</p>
+            <p>Players Number : {submission.playersList.length} / {submission.playersNumber}</p>
+            <button onClick={() => handleDelete(index, submission.matchID)}>Delete</button>
+            <button onClick={()=>handleClick(index,submission.matchID)}>Submit Results</button>
+          </div>
+            </div>
+        )
+      })
+     }
       {/* Render the Modal component */}
       <Modal
         isOpen={isModalOpen}
