@@ -71,7 +71,7 @@ const {loggedinUsername,friendToAdd}=req.body;
 const user=await Player.findOne({username:loggedinUsername});
 const friend=await Player.findOne({username:friendToAdd});
 if (user===friend){
-    res.status(201).json("You can't add yourself ?");
+    return res.status(201).json("You can't add yourself ?");
 }
 if (user.friendsList.includes(friend.username)) {
     return res.status(400).json({ message: "Friend already added" });
@@ -86,4 +86,19 @@ res.status(201).json("Friend Added");
         console.log(error);
         res.status(500).json({message:"Internal Server Error"})
     }
+}
+
+export const getFriendsList=async (req,res)=>{
+    try{
+        const loggedInUsername=req.loggedInUsername;
+        const user=await Player.findOne(loggedInUsername);
+        const friendsList=user.friendsList
+        if (friendsList!=null)
+        return res.status(201).json(friendsList);
+    else return res.status(201).json("get yourself some friends first ")
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message:"Something Went Wrong ! "});
+    }
+
 }
