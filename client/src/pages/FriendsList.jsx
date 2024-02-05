@@ -6,31 +6,38 @@ import UserContext from "../contexts/UserContext"
 
 
 const FriendsList=()=> {
+const {loggedInUsername}=useContext(UserContext);
+const [friendsList,setFriendsList]=useState([])
 
 async function getFriendsList(){
-    try {
-        axios.get("https://localhost:8080/")
-        
-    } catch (error) {
-        return []
-    }
+  try {
+      const response=await axios.get(`http://localhost:8080/api/users/friendsList?username=${loggedInUsername}`,
+      {headers:
+       {'Content-Type':'application/json',
+      },});
+      
+      return response.data;
+  } catch (error) {
+    console.error('Error fetching friends list:', error);
+      return []
+  }
 }
-
 
 useEffect(()=>{
-async function getFriendsList(){
-try{
-    axios.get()
-
-}catch(error){
- return[]
-}
-}
-})
+  const fetchData=async()=>{
+    const data = await getFriendsList();
+    setFriendsList(data);
+  };
+  fetchData()
+},[])
 
   return (
     <>
-    <div>friendsList</div>
+    <div>{friendsList.map((friend)=>(
+      <div key={friend._id}>
+        friend._id
+      </div>
+    ))}</div>
     </>
   )
 }

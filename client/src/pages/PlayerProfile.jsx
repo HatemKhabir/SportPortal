@@ -5,6 +5,7 @@ import axios from "axios"
 import { useLocation } from "react-router-dom";
 import UserContext from "../contexts/UserContext"
 import Modal from "../components/Modal"
+import friendShip from "../../../server/db/models/Friendships";
 
 
     
@@ -21,7 +22,7 @@ function PlayerProfile() {
   const [loading,setLoading]=useState(true)
   //useContext(UserContext) returns an object, and by using destructuring, you can extract the loggedInUsername property from that object directly.
   const [alreadyFriends,setAlreadyFriends]=useState(false);
-
+  const [invitePending,setInvitePending]=useState(false)
  async function fetchUserData(value){
   try {
     const response=await axios.get(`http://localhost:8080/api/users/profile?id=${value}`)
@@ -43,9 +44,12 @@ const handleAdd=async (username)=>{
   try{
   const response=await axios.post(`http://localhost:8080/api/users/addFriend`,{
     loggedinUsername:loggedInUsername,
-  friendToAdd:username})
-  setAlreadyFriends(true);
-  setModalMessage("You are Friends Now !")
+  friendToAdd:username},{headers:
+    {'Content-Type':'application/json',
+   }})
+   console.log(response);
+  setInvitePending(true)
+  setModalMessage("Invite Sent !")
       setIsModalOpen(true)
 }catch(error){
   setModalMessage(error)
@@ -73,17 +77,54 @@ if (response.status==200)
   }
 }
 
-  useEffect(()=>{
-    async function fetchData(){
-      const userData=await fetchUserData(username)
-    setReviews(userData.reviews)
-    setAvailablity(userData.availability)
-    setRecord(userData.record)
-    setAlreadyFriends(userData.friendsList.includes(loggedInUsername))
+useEffect(() => {
+  async function fetchData() {
+    let foundFriends;
+    const [userData, loggedInData] = await Promise.all([
+      fetchUserData(username),
+      fetchUserData(loggedInUsername)
+    ]);
+    setReviews(userData.profileData.reviews);
+    setAvailablity(userData.profileData.availability);
+    setRecord(userData.profileData.record);
+
+    for(let i=0;i<userData.friendShips.length;i++)
+    {
+     const friendship=userData.friendShips[i]; 
+     if((friendship.friendA==loggedInData.profileData._id) || (friendship.friendB==loggedInData.profileData._id))
+        { 
+          foundFriends=friendship;
+          break;
+        }
+      }
+        console.log(foundFriends);
+      if (foundFriends)
+      {setInvitePending(foundFriends.pendingStatus)
+        if (!invitePending)
+           setAlreadyFriends(true)
+      }
+    }
     setLoading(false)
+    fetchData();
+    console.log(invitePending)
+  },[])
+
+function Component(username,loggedInUsername,alreadyFriends,invitePending){
+  let component;
+  if (! alreadyFriends){
+    component=<button onClick={()=>handleAdd(username)}>Add Friend</button>
+  }else if (alreadyFriends && invitePending){
+    component=<button onClick={()=>{ setModalMessage("Invite still pending !")
+    setIsModalOpen(true)  }}>Invite Sent !</button>
+  }else if (alreadyFriends && !invitePending){
+    if (username !== loggedInUsername) 
+    component=<div>
+        <button onClick={() => handleReview(username)}>Review</button>
+        <button onClick={() => handleDelete(username)}>Delete Friend</button>
+      </div>
   }
-  fetchData();
-},[])
+  return component;
+}
 
     //set username basedo n the clicked link ? 
     return (
@@ -112,24 +153,14 @@ if (response.status==200)
       <div>
       <h2>Reviews :</h2> 
       <p> No reviews available.</p>
-     </div>)}
+     </div>)
+     }
       <h2>Availabality : </h2>
         <p>{availabality.toString()}</p>
        {/* needs to be wrapped in an arrow function so that it is only invoked whne cliccked , otherwise it will be invoked handleAdd(username) immediately when rendering the component */}
-      {(! alreadyFriends && username!=loggedInUsername) ? (
-      <button onClick={()=>handleAdd(username)}>Add Friend</button>
-      ):(
-        <>
-      <button onClick={()=>handleMessage(username)}>Send Message</button>
-      {(username !== loggedInUsername) && (
         <div>
-          <button onClick={() => handleReview(username)}>Review</button>
-          <button onClick={() => handleDelete(username)}>Delete Friend</button>
+        {Component(username,loggedInUsername,alreadyFriends,invitePending)}
         </div>
-      )}
-      </>
-      )    
-      }
       </div>
     </div>
     )}
