@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Player from "../db/models/Player.js";
+import friendShip from "../db/models/Friendships.js";
 
 export const getUsers=async(req,res)=>{
 try{
@@ -16,17 +17,22 @@ export const getProfile=async(req,res)=>{
     try{
 const username=req.query.id;
 const user=await Player.findOne({username:username})
-const profileData={
+const friendShips=await friendShip.find({$or:[{friendA:user._id},{friendB:user._id}]});
+const responseData={
+    profileData:{
+    _id:user._id,
     reviews:user.reviews,
     availability:user.availability,
     record:user.record,
-    friendsList:user.friendsList
+},
+friendShips:friendShips
 }
-res.json(profileData);
+
+return res.status(201).json(responseData);
 
     }catch(error){
         console.log(error);
-        res.status(500).json({message:"Internal Server Error"})
+       return res.status(500).json({message:"Internal Server Error"})
     }
 }
 /*The block with curly braces {} creates a block of code without an implicit return statement. 
@@ -70,18 +76,27 @@ export const addFriend=async(req,res)=>{
 const {loggedinUsername,friendToAdd}=req.body;
 const user=await Player.findOne({username:loggedinUsername});
 const friend=await Player.findOne({username:friendToAdd});
-if (user===friend){
-    return res.status(201).json("You can't add yourself ?");
+const friendRelation=await friendShip.find({
+    $or:[{friendA:user._id},{friendB:user._id}],
+    $or:[{friendA:friend._id},{friendB:friend._id}]
+})
+console.log(friendRelation)
+if (friendRelation.length!==0){
+    return res.status(201).json("Already Friends");
 }
-if (user.friendsList.includes(friend.username)) {
-    return res.status(400).json({ message: "Friend already added" });
-  }
-user.friendsList.push(friend.username)
-friend.friendsList.push(user.username)
-
-await user.save();
-await friend.save();
-res.status(201).json("Friend Added");
+const newFriendShip=new friendShip({
+friendA:user._id,
+friendB:friend._id,
+pendingStatus:true
+})
+try{
+    await newFriendShip.save();
+    console.log(await friendShip.find());
+}catch(err){
+    console.log(err)
+    return res.status(500).json({message:"Internal Server Error"})
+}
+return res.status(201).json("Friend Added");
     }catch(error){
         console.log(error);
         res.status(500).json({message:"Internal Server Error"})
@@ -90,11 +105,17 @@ res.status(201).json("Friend Added");
 
 export const getFriendsList=async (req,res)=>{
     try{
-        const loggedInUsername=req.loggedInUsername;
-        const user=await Player.findOne(loggedInUsername);
-        const friendsList=user.friendsList
-        if (friendsList!=null)
-        return res.status(201).json(friendsList);
+        const loggedInUsername=req.query.username;
+        const user=await Player.findOne({username:loggedInUsername});
+        const friends=await friendShip.find({
+            $or:[{friendA:user._id},{friendB:user._id}],
+            pendingStatus:false
+        })
+        if (friends!=null)
+        {
+           console.log(friends)
+            return res.status(201).json(friends);
+        }
     else return res.status(201).json("get yourself some friends first ")
     }catch(err){
         console.log(err)

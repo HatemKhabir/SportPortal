@@ -1,4 +1,4 @@
-import mongoose,{Mongoose, Schema} from "mongoose";
+import mongoose,{ Schema} from "mongoose";
 
 const friendShipSchema=mongoose.Schema({
     friendA:{
@@ -15,6 +15,6 @@ const friendShipSchema=mongoose.Schema({
     }
 })
 
-const friendShip=Mongoose.Model("friendShipS",friendShipSchema,"friends");
+const friendShip=mongoose.model("friendShip",friendShipSchema,"friends");
 
 export default friendShip
