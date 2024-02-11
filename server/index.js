@@ -23,13 +23,6 @@ app.use("/auth", authRoutes)
 app.use("/api/events", eventsRoutes)
 app.use("/api/users",usersRoutes)
 //----------------------------------------------------------------------------------------  Testing APIS-----------------------------------------------------------------------------------
-app.delete("/test/user",async (req,res)=>{
-  try{
-    
-  }catch(error){
-    console.log(error)
-  }
-})
 
 const startServer = async () => {
   try {

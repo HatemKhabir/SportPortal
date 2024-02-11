@@ -1,11 +1,11 @@
 import mongoose,{ Schema} from "mongoose";
 
 const friendShipSchema=mongoose.Schema({
-    friendA:{
+    sender:{
         type:Schema.Types.ObjectId,
         ref:'Player'
     },
-    friendB:{
+    recipient:{
         type:Schema.Types.ObjectId,
         ref:'Player'
     },

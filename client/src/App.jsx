@@ -12,7 +12,7 @@ function App() {
   return (
     <AuthProvider>
       <UserProvider>
-        <Header />
+        <Header/>
         <main>
           <Routes>
             <Route

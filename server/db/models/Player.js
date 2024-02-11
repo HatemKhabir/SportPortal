@@ -26,11 +26,6 @@ const userSchema = mongoose.Schema({
     type: String,
     default: ""
   },
-   friendsList:{
-       type:Array,
-      default:[]
-    },
-  
     //! match history = array of match score
     //? Future Plan, object {date , mode (1v1,2v2) , result(win or lose), score}
      matchHistory: {
