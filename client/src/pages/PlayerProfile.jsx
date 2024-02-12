@@ -51,6 +51,7 @@ function PlayerProfile() {
         { headers: { "Content-Type": "application/json" } }
       );
       console.log(response);
+      setAlreadyFriends(true)
       setInvitePending(true);
       setModalMessage("Invite Sent !");
       setIsModalOpen(true);
@@ -71,16 +72,39 @@ function PlayerProfile() {
   const handleDelete = async (username) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/users/removeFriend?friendToRemove=${username}&loggedInUsername=${loggedInUsername}`
+        `http://localhost:8080/api/users/removeFriend`,
+        {
+          params: {
+            friendToRemove: username,
+            loggedInUsername: loggedInUsername
+          }
+        }
       );
       if (response.status == 200) setAlreadyFriends(false);
       setModalMessage("Friend Deleted !");
       setIsModalOpen(true);
     } catch (error) {
-      setModalMessage(error);
+      setModalMessage(error.response.message);
       setIsModalOpen(true);
     }
   };
+
+  const declineFriendship=async(username)=>{
+try {
+  const response = await axios.delete(`http://localhost:8080/api/users/addFriend`, {
+    params: {
+      friend1: username,
+      friend2: loggedInUsername
+    }
+  });
+  setAlreadyFriends(false)
+  console.log(response)
+} catch (error) {
+  console.log(error.response.data);
+  setIsModalOpen(true)
+}
+}
+
   const acceptFriendship = async (username) => {
     try {
       const requestData = {
@@ -92,6 +116,7 @@ function PlayerProfile() {
         "http://localhost:8080/api/users/addFriend",
         requestData
       );
+      setInvitePending(false)
       console.log(response.data);
     } catch (error) {
       console.error(error);
@@ -153,7 +178,11 @@ function PlayerProfile() {
         if (invitePending) {
           if (recipientUser) {
             component = (
+              <>
               <button onClick={() => acceptFriendship(username)}>Accept</button>
+              <button onClick={()=>declineFriendship(username)}>Decline</button>
+              </>
+
             );
           } else {
             component = (

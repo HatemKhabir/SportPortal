@@ -16,13 +16,13 @@ export const getUsers = async (req, res) => {
 };
 
 async function getUserId(username) {
-    try {
-      const player = await Player.findOne({ username: username });
-      return player ? player._id : null;
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    const player = await Player.findOne({ username: username });
+    return player ? player._id : null;
+  } catch (error) {
+    console.error(error);
   }
+}
 
 export const getProfile = async (req, res) => {
   try {
@@ -58,41 +58,43 @@ const loggedinList = user.friendsList.filter((username) => {
 or do same as done below : */
 export const removeFriend = async (req, res) => {
   try {
-    const friendToRemove = req.query.friendToRemove;
-    const loggedInUsername = req.query.loggedInUsername;
+    const [friendToRemove, loggedInUsername] = await Promise.all([
+      getUserId(req.query.friendToRemove),
+      getUserId(req.query.loggedInUsername),
+    ]);
+    const friendship = await friendShip.findOneAndDelete({
+      $or: [
+        { sender: friendToRemove, recipient: loggedInUsername },
+        { sender: loggedInUsername, recipient: friendToRemove },
+      ],
+    });
 
-    const friend = await friendShip.findOne({ username: friendToRemove });
-    const user = await friendShip.findOne({ username: loggedInUsername });
-
-    if (user.friendsList.includes(friend.username)) {
-      const newList = friend.friendsList.filter((username) => {
-        return username !== loggedInUsername;
-      });
-      friend.friendsList = newList;
-      const loggedinList = user.friendsList.filter(
-        (username) => username !== friendToRemove
-      );
-      user.friendsList = loggedinList;
-      await friend.save();
-      await user.save();
+    if (friendship) {
       return res.status(200).json("Success");
     } else {
-      return res.status(400).json("Failed");
+      return res.status(501).json("Failed");
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal Server Error " });
+    res.status(500).json({ message: "Internal Server Error " }, error);
   }
 };
 export const addFriend = async (req, res) => {
   try {
     const { loggedinUsername, friendToAdd } = req.body;
-    const user = await Player.findOne({ username: loggedinUsername });
-    const friend = await Player.findOne({ username: friendToAdd });
+    const [user, friend] = await Promise.all([
+      Player.findOne({ username: loggedinUsername }),
+      Player.findOne({ username: friendToAdd })
+    ]
+    );
+
     const friendRelation = await friendShip.find({
       $or: [{ sender: user._id }, { recipient: user._id }],
       $or: [{ sender: friend._id }, { recipient: friend._id }],
     });
+    const friends = await friendShip.find();
+    console.log("friends ", friends);
+    console.log();
     console.log(friendRelation);
     if (friendRelation.length !== 0) {
       return res.status(201).json("Already Friends");
@@ -118,40 +120,76 @@ export const addFriend = async (req, res) => {
 
 export const getFriendsList = async (req, res) => {
   try {
+    const friendList;
     const loggedInUsername = req.query.username;
     const user = await Player.findOne({ username: loggedInUsername });
     const friends = await friendShip.find({
       $or: [{ sender: user._id }, { recipient: user._id }],
       pendingStatus: false,
     });
-    if (friends != null) {
-      console.log(friends);
-      return res.status(201).json(friends);
-    } else return res.status(201).json("get yourself some friends first ");
+    if (friends.length > 0) {
+      // Populate sender or recipient details for each friendship
+      const friendsList = await Promise.all(
+        friends.map(async (friendship) => {
+          if (friendship.sender.equals(user._id)) {
+            return await friendship.populate('recipient').execPopulate();
+          } else {
+            return await friendship.populate('sender').execPopulate();
+          }
+        })
+      );
+
+      return res.status(200).json(friendsList);
+    } else {
+      return res.status(200).json("Get yourself some friends first");
+    }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Something Went Wrong ! " });
+    res.status(500).json({ message: "Something Went Wrong!" });
   }
 };
-
 export const acceptFriendship = async (req, res) => {
   try {
     const friendA = await getUserId(req.body.friend1);
     const friendB = await getUserId(req.body.friend2);
-    
+
     const updatedFriendship = await friendShip.findOneAndUpdate(
-        { recipient: friendB, sender: friendA },
-        { $set: { pendingStatus: false } },
-        { new: true } // This option ensures that the updated document is returned
-      );
-      if (updatedFriendship) {
-        await updatedFriendship.save();
-        return res.status(201).json({ message: "friendShipAccepted", updatedFriendship });
-      } else {
-        return res.status(500).json({ message: "Friendship not found" });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Something Went Wrong!" });
+      { recipient: friendB, sender: friendA },
+      { $set: { pendingStatus: false } },
+      { new: true } // This option ensures that the updated document is returned
+    );
+    if (updatedFriendship) {
+      await updatedFriendship.save();
+      return res
+        .status(201)
+        .json({ message: "friendShipAccepted", updatedFriendship });
+    } else {
+      return res.status(500).json({ message: "Friendship not found" });
     }
-  };
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something Went Wrong!" });
+  }
+};
+
+export const declineFriendship = async (req, res) => {
+  try {
+    const friendA = await getUserId(req.query.friend1);
+    const friendB = await getUserId(req.query.friend2);
+
+    const updatedFriendship = await friendShip.findOneAndDelete(
+      { recipient: friendB, sender: friendA },
+      { new: true } // This option ensures that the updated document is returned
+    );
+    if (updatedFriendship) {
+      return res
+        .status(201)
+        .json({ message: "friendship Removed", updatedFriendship });
+    } else {
+      return res.status(500).json({ message: "Friendship not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};

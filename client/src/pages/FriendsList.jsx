@@ -33,12 +33,16 @@ useEffect(()=>{
 
   return (
     <>
-    <div>{friendsList.map((friend)=>(
-      <div key={friend._id}>
-        friend._id
-      </div>
-    ))}</div>
+    {friendsList.map((friend, index) => {
+        return (
+          <div key={index} className="FriendListElement">
+            {friend.username}
+          </div>
+        )
+      })
+     }
     </>
+    
   )
 }
 
