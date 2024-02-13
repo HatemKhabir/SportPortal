@@ -5,7 +5,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 import Modal from "../components/Modal";
-import friendShip from "../../../server/db/models/Friendships";
+import friendShip from "../../../server/db/models/friendRelationModel.js";
 
 function PlayerProfile() {
   const location = useLocation();

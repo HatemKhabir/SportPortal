@@ -1,7 +1,7 @@
-import Match from "../db/models/Match.js"
+import Match from "../db/models/matchModel.js"
 const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Define characters
 import mongoose from "mongoose"
-import Player from "../db/models/Player.js"
+import Player from "../db/models/playerModel.js"
 
 //generate matchID
 async function generateMatchID() {

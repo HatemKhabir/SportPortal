@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Player from "../db/models/Player.js";
-import friendShip from "../db/models/Friendships.js";
+import Player from "../db/models/playerModel.js";
+import friendShip from "../db/models/friendRelationModel.js";
 
 export const getUsers = async (req, res) => {
   try {
@@ -89,8 +89,8 @@ export const addFriend = async (req, res) => {
     );
 
     const friendRelation = await friendShip.find({
-      $or: [{ sender: user._id }, { recipient: user._id }],
-      $or: [{ sender: friend._id }, { recipient: friend._id }],
+      $or: [{ sender: user._id,recipient: user._id },
+       { sender: friend._id,recipient: friend._id }],
     });
     const friends = await friendShip.find();
     console.log("friends ", friends);
@@ -120,7 +120,6 @@ export const addFriend = async (req, res) => {
 
 export const getFriendsList = async (req, res) => {
   try {
-    const friendList;
     const loggedInUsername = req.query.username;
     const user = await Player.findOne({ username: loggedInUsername });
     const friends = await friendShip.find({
@@ -132,16 +131,16 @@ export const getFriendsList = async (req, res) => {
       const friendsList = await Promise.all(
         friends.map(async (friendship) => {
           if (friendship.sender.equals(user._id)) {
-            return await friendship.populate('recipient').execPopulate();
+            return await friendship.populate('recipient');
           } else {
-            return await friendship.populate('sender').execPopulate();
+            return await friendship.populate('sender');
           }
         })
       );
 
       return res.status(200).json(friendsList);
     } else {
-      return res.status(200).json("Get yourself some friends first");
+      return res.status(200).json([]);
     }
   } catch (err) {
     console.log(err);

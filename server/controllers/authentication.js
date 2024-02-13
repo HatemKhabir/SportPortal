@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import Player from "../db/models/Player.js"
+import Player from "../db/models/playerModel.js"
 //Authentication : when you register and login , Authorization : make sure someone is logged in to perform certain action
 
 //Registering and logging in with jwt

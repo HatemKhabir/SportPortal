@@ -9,9 +9,15 @@ const messagesSchema=mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref:'Player'
     },
-    content:String,
-    timestamp:Date
-})
+    content:{
+        type:String,
+        trim:true },
+    chat:{
+        type :Schema.Types.ObjectId,
+        ref:"Chat"
+    },
+},{timestamps:true})
+
 
 const Message=mongoose.Model("Messages",messagesSchema,"messages")
 
