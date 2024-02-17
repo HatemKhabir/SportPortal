@@ -8,6 +8,7 @@ import mongoose, { Schema } from "mongoose"
 import authRoutes from "./routes/authRoute.js"
 import eventsRoutes from "./routes/eventsRoute.js"
 import usersRoutes from "./routes/usersRoute.js"
+import chatRoutes from "./routes/chatRoute.js"
 
 dotenv.config()
 
@@ -22,6 +23,7 @@ app.use("/auth", authRoutes)
 //---------------------------------------------------------------------------------------    CREATE&JOIN MATCH    --------------------------------------------------------------------------------
 app.use("/api/events", eventsRoutes)
 app.use("/api/users",usersRoutes)
+app.use("/api/chats",chatRoutes)
 //----------------------------------------------------------------------------------------  Testing APIS-----------------------------------------------------------------------------------
 
 const startServer = async () => {
