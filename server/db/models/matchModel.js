@@ -4,6 +4,8 @@ const matchSchema = mongoose.Schema({
   matchID: { 
     type: String, 
     unique: true },
+  chat:{type:Schema.Types.ObjectId,
+  ref:"Chat"},
   //this will be fetched from the logged in user already not from database
   hostUsername:{
     type:String,

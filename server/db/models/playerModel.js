@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
 const userSchema = mongoose.Schema({
 
@@ -22,20 +22,22 @@ const userSchema = mongoose.Schema({
     Wins: Number,
     Losses: Number,
   },
-  matchJoined: {
-    type: String,
-    default: ""
-  },
+  matchJoined: [{
+    type: Schema.Types.ObjectId,
+    ref:"Match",
+    default: null
+  }],
     //! match history = array of match score
     //? Future Plan, object {date , mode (1v1,2v2) , result(win or lose), score}
-     matchHistory: {
+     
+    /* matchHistory: {
        matchTitle:String,
        date:Date,
        //1 for 1v1 , 2 for 2v2
        gameMode:Number,
        //1 for win 0 for lose
        result:Number,
-     },
+     }, */
   availability: {
     type: Boolean,
     default: true,

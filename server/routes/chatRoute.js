@@ -1,10 +1,11 @@
 import express from "express"
-import { accessChat } from "../controllers/chatController.js"
+import { accessChat, createEventChat, fetchChats, fetchEventChat } from "../controllers/chatController.js"
 const router=express.Router()
 
-// router.get("/",fetchChat)
+router.get("/",fetchChats)
 router.post("/",accessChat)
-// router.post("/eventChat",createEventChat)
+router.post("/eventChat",createEventChat)
+router.get("/eventChat",fetchEventChat)
 // router.put("/eventChatRemove",removeFromGroup)
 // router.put("/eventChatAdd",addToGroup)
 
