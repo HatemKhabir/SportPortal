@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoute.js"
 import eventsRoutes from "./routes/eventsRoute.js"
 import usersRoutes from "./routes/usersRoute.js"
 import chatRoutes from "./routes/chatRoute.js"
+import messageRoutes from "./routes/messageRoutes.js"
 
 dotenv.config()
 
@@ -24,6 +25,7 @@ app.use("/auth", authRoutes)
 app.use("/api/events", eventsRoutes)
 app.use("/api/users",usersRoutes)
 app.use("/api/chats",chatRoutes)
+app.use("/api/message",messageRoutes)
 //----------------------------------------------------------------------------------------  Testing APIS-----------------------------------------------------------------------------------
 
 const startServer = async () => {

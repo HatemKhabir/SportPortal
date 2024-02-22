@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 const chatSchema = mongoose.Schema(
   {
     eventId:{
-      type:String,
+      type:Schema.Types.ObjectId,
       ref:"Match",
       unique:true,
       default:null
@@ -13,8 +13,9 @@ const chatSchema = mongoose.Schema(
     },
     //array of users
     users: [{ type: Schema.Types.ObjectId, ref: "Player" }],
+    /* future plan of storing newer messages here for ease of acceess in fetching 
     chat: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-    latestMsg: {
+    */latestMsg: {
       type: Schema.Types.ObjectId,
       ref: "Message",
     },

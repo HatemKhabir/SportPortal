@@ -3,6 +3,9 @@ import Chat from "../db/models/chatModel.js";
 import Player from "../db/models/playerModel.js"
 import Match  from "../db/models/matchModel.js"
 
+
+
+/////////////////////////////////////////either initialize a new chat or access old one between 2 users 
 export const accessChat=async(req,res)=>{
     const {userId,loggedInUser}=req.body
     if (!userId)
@@ -32,7 +35,7 @@ export const accessChat=async(req,res)=>{
     return res.status(503).json({message:err.message})
   }
 }
-
+/////////////////////////////////////////return all chats for an user 
 export const fetchChats=async(req,res)=>{
 const {loggedInUser}=req.body
   try{
@@ -50,13 +53,15 @@ res.status(500).json({message:err.message})
 }
 
 }
+/////////////////////////////////////////initialize a new event chat after creation 
 
 export const createEventChat=async(req,res)=>{
   const {eventId,loggedInUser}=req.body;
   try{
-  const foundChat=await Chat.findOne({eventId:eventId});
+  const matchId=await Match.findOne({matchID:eventId});
+  const foundChat=await Chat.findOne({eventId:matchId._id});
   if (!foundChat){    
-    let newChat=await Chat.create({eventId:eventId,isGroupChat:true,users:[loggedInUser]})
+    let newChat=await Chat.create({eventId:matchId._id,isGroupChat:true,users:[loggedInUser]})
     await Chat.populate(newChat,[{path:"users",select:"username"},
     {path:"eventId"}])
     if (newChat)
@@ -68,16 +73,67 @@ export const createEventChat=async(req,res)=>{
     return res.status(503).json({message:err.message})
   }
 }
+/////////////////////////////////////////Fetch an event chat after clicking the event infos
 
 export const fetchEventChat=async(req,res)=>{
 const {eventId}=req.body;
 try{
   let eventFound=await Match.findOne({matchID:eventId}).select("_id")
+
   if (eventFound)
-  {let chatFound=await Chat.find({eventId:eventFound._id,isGroupChat:true}).populate("users","username").populate("eventId").populate("chat")
+  {let chatFound=await Chat.find({eventId:eventFound._id,isGroupChat:true}).populate("users","username").populate("eventId","eventTitle")
   if (chatFound.length>0)
   return res.status(200).json(chatFound)}
 }catch(e){
   return res.status(503).json({message:e.message})
 }
 }
+
+/////////////////////////////////////////Deleting a chat either group or personal
+
+export const deleteChat=async(req,res)=>{
+  const chatId=req.query.chatId;
+  try{
+    const findChat=await Chat.findOne({_id:chatId})
+    if (findChat)
+  {const deletedChat=await Chat.findOneAndDelete({_id:chatId})
+  if (deletedChat)
+  return res.status(200).json({message:"Chat Deleted !"})
+  }else return res.status(404).json({message:"something went wrong"})
+  return res.status(200).json({message:"Event Chat not Found"})
+  }catch(e){
+    console.log(e);
+    return res.status(503).json({message:e.message})
+  }
+}
+/////////////////////////////////////////add user to an event chat (by him joining the event)
+
+export const addUserEventChat=async(req,res)=>{
+const userId=req.params.userId
+const eventId=req.params.eventId
+try{
+  const modifiedEventChat=await Chat.findOneAndUpdate({eventId:eventId},{$addToSet:{users:userId}},{new:true}).populate("users","username").populate("eventId","eventTitle")
+ if (!modifiedEventChat)
+return res.status(403).json({message:"Event Chat Not Found !"})
+else return res.status(200).json(modifiedEventChat) 
+
+}catch(e){
+return res.status(503).json({message:e.message})
+}
+}
+/////////////////////////////////////////remove user from an event chat (by him leaving the event)
+export const removeFromEventChat=async(req,res)=>{
+
+  const userId=req.params.userId
+  const eventId=req.params.eventId
+  try{
+    const modifiedEventChat=await Chat.findOneAndUpdate({eventId:eventId},{$pull:{users:userId}},{new:true}).populate("users","username")
+  
+  if (!modifiedEventChat)
+  return res.status(403).json({message:"Event Chat Not Found !"})
+  else return res.status(200).json(modifiedEventChat)
+  
+  }catch(e){
+  return res.status(503).json({message:e.message})
+  }
+  }

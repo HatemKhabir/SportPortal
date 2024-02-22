@@ -5,10 +5,6 @@ const messagesSchema=mongoose.Schema({
         type : Schema.Types.ObjectId,
         ref:'Player'
     },
-    receipientID:{
-        type:Schema.Types.ObjectId,
-        ref:'Player'
-    },
     content:{
         type:String,
         trim:true },
@@ -19,6 +15,6 @@ const messagesSchema=mongoose.Schema({
 },{timestamps:true})
 
 
-const Message=mongoose.Model("Messages",messagesSchema,"messages")
+const Message=mongoose.model("Messages",messagesSchema,"messages")
 
 export default Message
