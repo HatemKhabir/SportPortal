@@ -6,5 +6,5 @@ import JoinEvent from "./JoinEvent"
 import LookForPlayer from "./LookForPlayer"
 import PlayerProfile from "./PlayerProfile"
 import FriendsList from "./friendsList"
-
-export { Home, SignUp, Login, CreateEvent, JoinEvent, LookForPlayer, PlayerProfile,FriendsList }
+import ChatPage from "./ChatPage"
+export { Home, SignUp, Login, CreateEvent, JoinEvent, LookForPlayer, PlayerProfile,FriendsList,ChatPage }

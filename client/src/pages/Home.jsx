@@ -15,6 +15,9 @@ const Home = () => {
       <Link to='/friends'>
         <button>Friends List</button>
       </Link>
+      <Link to='/chats'>
+        <button>Chats</button>
+      </Link>
     </>
   )
 }

@@ -15,7 +15,7 @@ const Login = () => {
   const { from } = location.state || { from: { pathname: "/" } }
 
   const { setIsAuthenticated } = useContext(AuthContext)
-  const { setLoggedInUsername,loggedInUsername } = useContext(UserContext) // Get the setLoggedInUsername function
+const [loggedInUsername, setLoggedInUsername] = useContext(UserContext);
 
 
 
@@ -57,10 +57,10 @@ const Login = () => {
         // console.log("authToken:", response.data.token) // Add this line to log the authToken
         localStorage.setItem("authToken", authToken)
         setIsAuthenticated(true)
-
         // Set the logged-in username here
         setLoggedInUsername(username)
         localStorage.setItem("loggedInUsername", username);
+        localStorage.setItem("loggedInUserId",response.data.player._id)
         navigate(from)
         console.log("Login successful")
       }

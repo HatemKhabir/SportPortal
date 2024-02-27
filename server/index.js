@@ -10,7 +10,7 @@ import eventsRoutes from "./routes/eventsRoute.js"
 import usersRoutes from "./routes/usersRoute.js"
 import chatRoutes from "./routes/chatRoute.js"
 import messageRoutes from "./routes/messageRoutes.js"
-
+import {Server} from "socket.io"
 dotenv.config()
 
 const port = process.env.PORT
@@ -30,8 +30,26 @@ app.use("/api/message",messageRoutes)
 
 const startServer = async () => {
   try {
-    app.listen(port, () => console.log(`server has started on port ${port}`))
+    const server=app.listen(port, () => console.log(`server has started on port ${port}`))
     connectDB(process.env.ATLAS_URI)
+    const io=new Server(server,{
+      pingTimeout:60000, 
+      cors:{
+        origin:"http://localhost:5173"
+      }
+    })
+    io.on("connection", (socket) => {
+      console.log(`User Connected: ${socket.id}`)}
+      );
+      //create new socket for specific user
+    io.on("setup",(userdata)=>{
+        socket.join(userdata._id)
+        socket.emit("connected")
+      })
+    io.on("join_event",(chatRoom)=>{
+      socket.join(chatRoom);
+      console.log("user Joined Room"+room)
+    })
   } catch (e) {
     console.log(e)
   }

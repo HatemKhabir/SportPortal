@@ -65,7 +65,7 @@ function PlayerProfile() {
   };
 
   const handleMessage = () => {
-    console.log("9ob9aba9eb");
+    
   };
 
   //in delete request you cant use request body like post or put instead use queries

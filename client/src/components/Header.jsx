@@ -9,7 +9,7 @@ import UserContext from "../contexts/UserContext"
 const Header = () => {
   const { isAuthenticated, handleLogout } = useContext(AuthContext)
   //track the logged in user using the UserContext
-  const { loggedInUsername } = useContext(UserContext)
+  const [ loggedInUsername ] = useContext(UserContext)
   return (
     <header>
       <Link to='/'>

@@ -37,21 +37,23 @@ export const accessChat=async(req,res)=>{
 }
 /////////////////////////////////////////return all chats for an user 
 export const fetchChats=async(req,res)=>{
-const {loggedInUser}=req.body
+  const loggedInUser = req.query.loggedInUser; // Use req.query for query parameters
   try{
 const userChats=await Chat.find({
   users:{$elemMatch:{$eq:loggedInUser}}
 })
-  await Chat.populate(userChats,[
+if (!userChats){
+  var populatedChats=await Chat.populate(userChats,[
     {path:"users",select:"username"},
     {path:"latestMsg"},
     {path:"eventId",select:"eventTitle"}
-]).sort({updatedAt:-1})
-res.status(201).json(userChats)
+  ])
+  const sortedChats=populatedChats.sort((a, b) => b.updatedAt - a.updatedAt)
+  return res.status(201).json(sortedChats)
+}else return res.status(201).json({message:"No Chats Found"})
 }catch(err){
-res.status(500).json({message:err.message})
+return res.status(500).json({message:err.message})
 }
-
 }
 /////////////////////////////////////////initialize a new event chat after creation 
 
