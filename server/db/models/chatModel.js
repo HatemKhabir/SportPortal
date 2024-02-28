@@ -4,8 +4,6 @@ const chatSchema = mongoose.Schema(
     eventId:{
       type:Schema.Types.ObjectId,
       ref:"Match",
-      unique:true,
-      default:null
     },
     isGroupChat: {
       type: Boolean,

@@ -25,29 +25,30 @@ export const accessChat=async(req,res)=>{
    }else{
     const newChatData={
         isGroupChat:false,
-        users:[loggedInUser,userId]
+        users:[loggedInUser,userId],
     }
     const chatCreated=await Chat.create(newChatData)
     await Chat.populate(chatCreated, { path: "users", select: "-password" });
     res.status(200).json(chatCreated)
    }
   }catch(err){
-    return res.status(503).json({message:err.message})
+    return res.status(503).json(err)
   }
 }
 /////////////////////////////////////////return all chats for an user 
 export const fetchChats=async(req,res)=>{
-  const loggedInUser = req.query.loggedInUser; // Use req.query for query parameters
+  const loggedInUser = req.query.loggedInUser;
   try{
 const userChats=await Chat.find({
   users:{$elemMatch:{$eq:loggedInUser}}
 })
-if (!userChats){
+if (userChats){
   var populatedChats=await Chat.populate(userChats,[
     {path:"users",select:"username"},
     {path:"latestMsg"},
     {path:"eventId",select:"eventTitle"}
   ])
+  populatedChats= await Chat.populate(populatedChats,[{path:"latestMsg.senderID",select:"username"}])
   const sortedChats=populatedChats.sort((a, b) => b.updatedAt - a.updatedAt)
   return res.status(201).json(sortedChats)
 }else return res.status(201).json({message:"No Chats Found"})
