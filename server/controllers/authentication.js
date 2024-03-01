@@ -18,7 +18,6 @@ export const register = async (req, res) => {
         Wins: 0,
         Losses: 0,
       },
-      matchJoined: "",
       availability: true,
     })
     const savedPlayer = await newPlayer.save()

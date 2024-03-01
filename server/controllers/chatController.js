@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { connect } from "mongoose";
 import Chat from "../db/models/chatModel.js";
 import Player from "../db/models/playerModel.js"
 import Match  from "../db/models/matchModel.js"
+import Message from "../db/models/messageModel.js";
 
 
 
 /////////////////////////////////////////either initialize a new chat or access old one between 2 users 
 export const accessChat=async(req,res)=>{
-    const {userId,loggedInUser}=req.body
+    const {userId,loggedInUser,content}=req.body
     if (!userId)
     return res.status(400).json({message:"UserId doesn't exist"})
   try{
@@ -28,8 +29,16 @@ export const accessChat=async(req,res)=>{
         users:[loggedInUser,userId],
     }
     const chatCreated=await Chat.create(newChatData)
-    await Chat.populate(chatCreated, { path: "users", select: "-password" });
-    res.status(200).json(chatCreated)
+    
+    const messageDate={
+      senderID:loggedInUser,
+        content:content,
+        chat:chatCreated._id
+    }
+    const message=await Message.create(messageDate)
+    const findChat=await Chat.findOneAndUpdate({_id:chatCreated._id},{latestMsg:message})
+    await Chat.populate(findChat, [{ path: "users", select: "userame" },{path:"latestMsg"}]) ;
+    res.status(200).json(findChat)
    }
   }catch(err){
     return res.status(503).json(err)
