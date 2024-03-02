@@ -30,7 +30,7 @@ export const sendMessage=async(req,res)=>{
 }
 
 export const getMessages=async(req,res)=>{
-const {chatId,senderId}=req.body
+const {chatId}=req.query
 try{
     const messages=await Message.find({chat:chatId}).sort({createdAt:1})
     return res.status(200).json(messages)

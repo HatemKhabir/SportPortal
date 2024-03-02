@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react'
 import io from "socket.io-client";
 import { useEffect, useState, useContext } from "react";
@@ -5,7 +6,7 @@ import UserContext from "../contexts/UserContext";
 import axios from "axios";
 
 
-function AllChats() {
+function AllChats({setSelectedChat}) {
     const [loggedInUsername, 
       setLoggedInUsername,
       loggedInUserID,
@@ -46,7 +47,7 @@ useEffect(() => {
       >
         {userChats.map((chat) => (
           
-          <li key={chat._id} onClick={()=>{alert("chat clicked")}} className=" mb-2.5 sm:-ml-1 lg:ml-4 btn hover:cursor-pointer shadow-[0_4px_0_rgb(0,0,0)] hover:shadow-[0_4px_0px_rgb(0,0,0)] w-4/5 hover:translate-y-1 transition-all col-span-1 divide-y divide-gray-200 rounded-lg bg-white">
+          <li key={chat._id} onClick={()=>{setSelectedChat(chat);console.log(chat)}} className=" mb-2.5 sm:-ml-1 lg:ml-4 btn hover:cursor-pointer shadow-[0_4px_0_rgb(0,0,0)] hover:shadow-[0_4px_0px_rgb(0,0,0)] w-4/5 hover:translate-y-1 transition-all col-span-1 divide-y divide-gray-200 rounded-lg bg-white">
             <div className="flex  w-full items-center justify-between space-x-6 p-4">
               <div className="flex-1 truncate">
                 <div className="flex flex-col items-center space-x-2 ">

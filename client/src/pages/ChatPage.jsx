@@ -4,6 +4,8 @@ import UserContext from "../contexts/UserContext";
 import axios from "axios";
 import AllChats from "../components/allChats";
 import ChatBox from "../components/chatBox";
+import Box from '@mui/material/Box';
+
 
 var socket, connectedChat;
 
@@ -15,16 +17,39 @@ function ChatPage() {
     userChats,
     setChats
     ] = useContext(UserContext);
-
+  const [messages,setMessages]=useState([])
+  const [selectedChat,setSelectedChat]=useState([])
+  useEffect(()=>{
+   const fetchMessages=async ()=>{
+    try{
+      const response = await axios.get("http://localhost:8080/api/message", {
+        params: {
+          chatId: selectedChat._id,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    setMessages(response.data)
+    console.log(messages)
+    }catch(e){
+      console.log(e)
+    }
+  }
+  fetchMessages()
+  },[selectedChat])
+  useEffect(()=>{
+console.log(messages)
+  },[messages])
   return(<>
   <div className="flex justify-between flex-row mx-auto ">
     <div className="basis-1/5 border-cyan-700 border-4">
       <h2 className="text-center font-serif subpixel-antialiased italic text-lg text-sky-600   ">My Chats</h2>
-           <AllChats/>
+           <AllChats setSelectedChat={setSelectedChat}/>
     </div>
-    <div className="basis-full border-4">
-           <ChatBox/>
-    </div>
+    <Box className="relative basis-full border-4">
+           <ChatBox messages={messages} selectedChat={selectedChat}/>
+    </Box>
   </div>
   
   </>)
