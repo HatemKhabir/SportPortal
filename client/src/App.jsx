@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext"
 import { UserProvider } from "./contexts/UserContext"
 
 import ProtectedRoute from "./routes/ProtectedRoute"
+import { SocketProvider } from "./contexts/SocketContext"
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
         </main>
       </UserProvider>
     </AuthProvider>
+  
   )
 }
 

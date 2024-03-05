@@ -3,8 +3,10 @@ import { TextField, Button } from '@mui/material';
 import { useState,useContext } from 'react';
 import ScrollableFeed from 'react-scrollable-feed'
 import UserContext from "../contexts/UserContext";
+import axios from 'axios';
+import io from "socket.io-client";
 
-function ChatBox({selectedChat,messages}) {
+function ChatBox({socket,selectedChat,messages,setMessages}) {
   const [loggedInUsername, 
     setLoggedInUsername,
     loggedInUserID,
@@ -16,8 +18,28 @@ function ChatBox({selectedChat,messages}) {
   const handleTyping=(e)=>{
     setMessage(e.target.value)
   }
-  const sendMessage=()=>{
-  console.log("button clicked",message)
+  const sendMessage=async ()=>{
+  const messageData={
+    chatId:selectedChat._id,
+    messageContent:message,
+    senderID:loggedInUserID
+  }
+  console.log(messageData)
+  if (message){
+    try{
+      const data=await axios.post("http://localhost:8080/api/message",{
+       messageData,
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+     console.log("the data",data)
+     socket.emit("new message",data)
+     setMessages([...messages,message])
+    }catch(e){
+      console.log(e)
+    }
+  }
   setMessage('')
 console.log(selectedChat)  
 }
@@ -28,7 +50,7 @@ console.log(selectedChat)
       {messages &&
         messages.map((m) => {
           return(
-          <div style={{ display: "flex" }} key={m._id}>
+          <div key={m._id} style={{ display: "flex" }} >
             <span
               style={{
                 backgroundColor: `${

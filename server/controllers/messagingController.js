@@ -3,7 +3,7 @@ import Chat from "../db/models/chatModel.js";
 import Message from "../db/models/messageModel.js"
 
 export const sendMessage=async(req,res)=>{
-    const {chatId,messageContent,senderID}=req.body
+    const {chatId,messageContent,senderID}=req.body.messageData
     if (!chatId || !messageContent){
         return res.status(403).json({message:"Invalid Data Sent"})
     }
@@ -20,7 +20,7 @@ export const sendMessage=async(req,res)=>{
     await Chat.populate(findChat,{path:"latestMsg",select:"content"})
     console.log(message)
     if(message&&findChat)
-    return res.status(201).json({message:"message Sent"});
+    return res.status(201).json(newMessage);
     return res.status(403).json({message:"something wwong happend"})
     }catch(e){
         console.log(e)

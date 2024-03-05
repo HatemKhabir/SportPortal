@@ -11,6 +11,7 @@ import usersRoutes from "./routes/usersRoute.js"
 import chatRoutes from "./routes/chatRoute.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import {Server} from "socket.io"
+import Chat from "./db/models/chatModel.js"
 dotenv.config()
 
 const port = process.env.PORT
@@ -38,18 +39,32 @@ const startServer = async () => {
         origin:"http://localhost:5173"
       }
     })
-    io.on("connection", (socket) => {
-      console.log(`User Connected: ${socket.id}`)}
-      );
-      //create new socket for specific user
-    io.on("setup",(userdata)=>{
-        socket.join(userdata._id)
+    io.on("connect", (socket) => {
+      console.log(`User Connected: ${socket.id}`)
+      
+      socket.on("setup",(userData)=>{
+        socket.join(userData)
         socket.emit("connected")
-      })
-    io.on("join_event",(chatRoom)=>{
-      socket.join(chatRoom);
-      console.log("user Joined Room"+room)
     })
+    socket.on("join chat",(chatId)=>{
+      socket.join(chatId)
+      console.log("user joined ",chatId)
+    })
+    
+    socket.on("new message",async(newMessageReceived)=>{
+      var chat=await Chat.findById(newMessageReceived.data.chat)
+      if (!chat.users) return console.log("bad chat id");
+      chat.users.forEach(user=>{
+        if (user==newMessageReceived.data.senderID) return;
+        socket.in(user).emit("message recieved",newMessageReceived) 
+        console.log(socket.in(user))
+        console.log("message emitted")
+      })
+    })
+
+  }
+  )
+
   } catch (e) {
     console.log(e)
   }

@@ -15,8 +15,7 @@ function AllChats({setSelectedChat}) {
       setChats
       ] = useContext(UserContext);
 useEffect(() => {
-  console.log(loggedInUsername)
-  console.log(loggedInUserID)
+
         const fetchChats = async () => {
           try {
             const response = await axios.get("http://localhost:8080/api/chats", {
@@ -33,11 +32,8 @@ useEffect(() => {
           }
         };
         fetchChats();
-        console.log(userChats)
       }, []);
-      useEffect(() => {
-        console.log(userChats);
-      }, [userChats]);
+ 
   return (
     <>
         {userChats && (

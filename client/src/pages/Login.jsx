@@ -4,20 +4,16 @@ import axios from "axios"
 import { Link } from "react-router-dom"
 import { AuthContext } from "../contexts/AuthContext"
 import UserContext from "../contexts/UserContext" // Import the UserContext hook
-
+import { io } from 'socket.io-client';
 const Login = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-
   const navigate = useNavigate()
   const location = useLocation()
   const { from } = location.state || { from: { pathname: "/" } }
-
   const { setIsAuthenticated } = useContext(AuthContext)
-const [loggedInUsername, setLoggedInUsername] = useContext(UserContext);
-
-
+  const [loggedInUsername, setLoggedInUsername] = useContext(UserContext);
 
   //this logic runs when the component mounts (i.e., when it is initially rendered) and whenever any of the dependencies (setIsAuthenticated, navigate, or from) change
   useEffect(() => {
@@ -52,11 +48,8 @@ const [loggedInUsername, setLoggedInUsername] = useContext(UserContext);
       // Handle the response here
       if (response.status === 200) {
         //store the user token in localStorage
-        const authToken = response.headers["authorization"]
-        //TODO: to delete when deploying the app
-        // console.log("authToken:", response.data.token) // Add this line to log the authToken
-        localStorage.setItem("authToken", authToken)
-        setIsAuthenticated(true)
+       localStorage.setItem("authToken", response.data.token);
+       setIsAuthenticated(true)
         // Set the logged-in username here
         setLoggedInUsername(username)
         localStorage.setItem("loggedInUsername", username);
