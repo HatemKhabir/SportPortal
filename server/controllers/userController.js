@@ -27,6 +27,7 @@ async function getUserId(username) {
 export const getProfile = async (req, res) => {
   try {
     const username = req.query.id;
+    console.log("received query:",username)
     const user = await Player.findOne({ username: username });
     const friendShips = await friendShip.find({
       $or: [{ sender: user._id }, { recipient: user._id }],

@@ -15,7 +15,11 @@ function LookForPlayer() {
   }
   const fetchData=async (value)=>{
     try {
-        const response=await axios.get(`http://localhost:8080/api/users/search-player?q=${value}`)
+        const response=await axios.get(`http://localhost:8080/api/users/search-player?q=${value}`,{
+          headers:{
+            Authorization:`Bearer ${localStorage.getItem("authToken")}`
+          }
+        })
         const data=response.data
         setResults(data)
         setShowResults(data.length>0);

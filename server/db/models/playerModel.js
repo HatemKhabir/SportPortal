@@ -14,11 +14,6 @@ const userSchema = mongoose.Schema({
     required: true,
     minlength: 5,
   },
-  reviews: {
-    type: Map,
-    default:{},
-    of: String,
-  },
   record: {
     Wins: Number,
     Losses: Number,

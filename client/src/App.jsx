@@ -30,27 +30,27 @@ function App() {
               />
             <Route
               path='/create-event'
-              element={<CreateEvent />}
+              element={<ProtectedRoute component={CreateEvent} />}
               />
             <Route
               path='/join-event'
-              element={<JoinEvent />}
+              element={<ProtectedRoute component={JoinEvent} />}
               />
             <Route
               path='/search-player'
-              element={<LookForPlayer />}
+              element={<ProtectedRoute component={LookForPlayer} />}
               />
             <Route 
             path='/profile'
-            element={<PlayerProfile/>}>
+            element={<ProtectedRoute component={PlayerProfile} />}>
             </Route>
             <Route
             path="/friends"
-            element={<FriendsList/>}> 
+            element={<ProtectedRoute component={FriendsList} />}> 
             </Route>
             <Route
             path="/chats"
-            element={<ChatPage/>}> 
+            element={<ProtectedRoute component={ChatPage} />}> 
             </Route>
           </Routes>
         

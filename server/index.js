@@ -12,6 +12,7 @@ import chatRoutes from "./routes/chatRoute.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import {Server} from "socket.io"
 import Chat from "./db/models/chatModel.js"
+import { errorHandler, notFound } from "./middleware/errorMiddelware.js"
 dotenv.config()
 
 const port = process.env.PORT
@@ -28,7 +29,8 @@ app.use("/api/users",usersRoutes)
 app.use("/api/chats",chatRoutes)
 app.use("/api/message",messageRoutes)
 //----------------------------------------------------------------------------------------  Testing APIS-----------------------------------------------------------------------------------
-
+app.use(notFound)
+app.use(errorHandler)
 const startServer = async () => {
   try {
     const server=app.listen(port, () => console.log(`server has started on port ${port}`))

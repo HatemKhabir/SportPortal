@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 import Modal from "../components/Modal";
 import friendShip from "../../../server/db/models/friendRelationModel.js";
+import { sendMessage } from "../../../server/controllers/messagingController.js";
 
 function PlayerProfile() {
   const location = useLocation();
@@ -15,9 +16,8 @@ function PlayerProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [availabality, setAvailablity] = useState(false);
-  const [reviews, setReviews] = useState([]);
   const [record, setRecord] = useState({ Wins: 0, Losses: 0 });
-  const { loggedInUsername } = useContext(UserContext);
+  const [ loggedInUsername] = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   //useContext(UserContext) returns an object, and by using destructuring, you can extract the loggedInUsername property from that object directly.
   const [alreadyFriends, setAlreadyFriends] = useState(false);
@@ -25,14 +25,16 @@ function PlayerProfile() {
   async function fetchUserData(value) {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/users/profile?id=${value}`
-      );
-      JSON.stringify(response),
+        `http://localhost:8080/api/users/profile?id=${value}`,
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-        };
+        }
+      );
+      
+
       return response.data;
     } catch (error) {
       alert("errors fetching user data",error);
@@ -48,7 +50,9 @@ function PlayerProfile() {
           loggedinUsername: loggedInUsername,
           friendToAdd: username,
         },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json",
+        Authorization:`Bearer ${localStorage.getItem("authToken")}`
+       } }
       );
       console.log(response);
       setAlreadyFriends(true)
@@ -64,7 +68,7 @@ function PlayerProfile() {
     setIsModalOpen(false);
   };
 
-  const handleMessage = () => {
+  const handleMessage = (username) => {
     
   };
 
@@ -77,6 +81,8 @@ function PlayerProfile() {
           params: {
             friendToRemove: username,
             loggedInUsername: loggedInUsername
+          },headers:{
+          Authorization:`Bearer ${localStorage.getItem("authToken")}`
           }
         }
       );
@@ -95,6 +101,8 @@ try {
     params: {
       friend1: username,
       friend2: loggedInUsername
+    },headers:{
+      Authorization:`Bearer ${localStorage.getItem("authToken")}`
     }
   });
   setAlreadyFriends(false)
@@ -114,7 +122,9 @@ try {
 
       const response = await axios.patch(
         "http://localhost:8080/api/users/addFriend",
-        requestData
+        requestData,{headers:{
+          Authorization:`Bearer ${localStorage.getItem("authToken")}`
+        }}
       );
       setInvitePending(false)
       console.log(response.data);
@@ -133,7 +143,6 @@ try {
         fetchUserData(username),
         fetchUserData(loggedInUsername),
       ]);
-      setReviews(userData.profileData.reviews);
       setAvailablity(userData.profileData.availability);
       setRecord(userData.profileData.record);
 
@@ -199,7 +208,7 @@ try {
         } else {
           component = (
             <div>
-              <button onClick={() => handleReview(username)}>Review</button>
+              <button onClick={()=>sendMessage(username)}>Send Message</button>
               <button onClick={() => handleDelete(username)}>
                 Delete Friend
               </button>
@@ -228,21 +237,6 @@ try {
             <p>
               Wins: {record.Wins}, Losses: {record.Losses}
             </p>
-            {reviews.length > 0 ? (
-              <div>
-                <h2>Reviews :</h2>
-                <ul>
-                  {reviews.map((review, index) => (
-                    <li key={index}>{review}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div>
-                <h2>Reviews :</h2>
-                <p> No reviews available.</p>
-              </div>
-            )}
             <h2>Availabality : </h2>
             <p>{availabality.toString()}</p>
             {/* needs to be wrapped in an arrow function so that it is only invoked whne cliccked , otherwise it will be invoked handleAdd(username) immediately when rendering the component */}

@@ -29,6 +29,8 @@ const JoinEvent = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization:`Bearer ${localStorage.getItem("authToken")}`
+
           },
         }
       )
@@ -49,7 +51,11 @@ const JoinEvent = () => {
   useEffect(()=>{
     async function fetchData() {
       try {
-        const response=await axios.get("http://localhost:8080/api/events/join-event")
+        const response=await axios.get("http://localhost:8080/api/events/join-event",{
+          headers:{
+            Authorization:`Bearer ${localStorage.getItem("authToken")}`
+          }
+        })
         console.log(response.data);
         setSubmissions(response.data);        
       } catch (error) {
@@ -61,7 +67,11 @@ const JoinEvent = () => {
   )
   const handleDelete = async (index,matchid) => {
     try{
-      await axios.delete(`http://localhost:8080/api/events/create-event?matchID=${matchid}`).
+      await axios.delete(`http://localhost:8080/api/events/create-event?matchID=${matchid}`,{
+        headers:{
+          Authorization:`Bearer ${localStorage.getItem("authToken")}`
+        }
+      }).
       then((response)=>console.log(response));  
     }catch(error){
       console.log(error);

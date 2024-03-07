@@ -6,7 +6,7 @@ import UserContext from "../contexts/UserContext"
 
 
 const FriendsList=()=> {
-const {loggedInUsername}=useContext(UserContext);
+  const [loggedInUsername]=useContext(UserContext);
 const [friendsList,setFriendsList]=useState([])
 
 async function getFriendsList(){
@@ -14,6 +14,7 @@ async function getFriendsList(){
       const response=await axios.get(`http://localhost:8080/api/users/friendsList?username=${loggedInUsername}`,
       {headers:
        {'Content-Type':'application/json',
+        Authorization:`Bearer ${localStorage.getItem("authToken")}`
       },});
       
       console.log(response)

@@ -5,12 +5,12 @@ import PropTypes from "prop-types"
 export const AuthContext = React.createContext()
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(true)
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken")
-    if (authToken) {
-      setIsAuthenticated(true)
+    if (!authToken) {
+      setIsAuthenticated(false)
     }
   }, [])
 

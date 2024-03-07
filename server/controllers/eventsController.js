@@ -84,7 +84,7 @@ export const deleteEvent=async(req,res)=>{
 }
 
 export const getEvents=async(req,res)=>{
-
+console.log(req.query)
 const username=req.query.user;
 try{
   const match = await Match.find({hostUsername:username});

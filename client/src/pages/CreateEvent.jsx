@@ -7,12 +7,19 @@ import UserContext from "../contexts/UserContext"
 // get the username of logged in user , check if he created a game already on the database , if he did he can't create one more till the other game ends
 const CreateEvent = () => {
   //track the logged in user using the UserContext
-  const { loggedInUsername } = useContext(UserContext)
+  const [loggedInUsername] = useContext(UserContext)
   const navigate = useNavigate();
 
   async function fetchMatches(){
+    console.log(loggedInUsername)
       try {
-        const response = await axios.get(`http://localhost:8080/api/events/create-event?user=${loggedInUsername}`)
+        const config={
+          headers:{
+            Authorization:`Bearer ${localStorage.getItem("authToken")}`
+          }
+        }
+        const response = await axios.get(`http://localhost:8080/api/events/create-event?user=${loggedInUsername}`,config)
+        console.log("fetch matches " ,response.data)
         return response.data 
       } catch (error) {
          alert(error)
@@ -92,6 +99,7 @@ setFormData({...formData,[e.target.name]:12})
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization:`Bearer ${localStorage.getItem("authToken")}`
           },
         }
       )
@@ -120,9 +128,13 @@ setFormData({...formData,[e.target.name]:12})
       console.log(error)
     }
   }
+  
   const handleDelete = async (index,matchid) => {
     try{
-      await axios.delete(`http://localhost:8080/api/events/create-event?matchID=${matchid}`).
+      await axios.delete(`http://localhost:8080/api/events/create-event?matchID=${matchid}`,
+      {headers:{
+        Authorization:`Bearer ${localStorage.getItem("authToken")}`
+      }}).
       then((response)=>console.log(response));  
     }catch(error){
       console.log(error);
