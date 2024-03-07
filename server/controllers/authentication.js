@@ -21,7 +21,7 @@ export const register = async (req, res) => {
       availability: true,
     })
     const savedPlayer = await newPlayer.save()
-    res.status(201).json(savedPlayer)
+    res.status(201).json({savedPlayer})
   } catch (err) {
     if (err.code === 11000) {
       res.status(400).json({ msg: "Username is already taken." })
@@ -33,13 +33,21 @@ export const register = async (req, res) => {
 }
 
 //logging and assigning the jwt token
-
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body
     const player = await Player.findOne({ username: username })
-    if (!player) return res.status(400).json({ msg: "username doesn't exist !" })
-    if (player.password !== password) return res.status(400).json({ msg: "Password incorrect" })
+
+    if (!player) {
+      return res.status(400).json({ msg: "Username doesn't exist!" })
+    }
+
+    // Check if the password is incorrect
+    if (!(await player.matchPassword(password))) {
+      return res.status(400).json({ msg: "Password incorrect" })
+    }
+
+    // If the password is correct, generate a token
     const token = jwt.sign({ id: username.username }, process.env.JWT_SECRET)
     res.status(200).json({ token, player })
   } catch (err) {

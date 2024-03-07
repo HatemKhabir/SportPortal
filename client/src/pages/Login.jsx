@@ -55,7 +55,7 @@ const Login = () => {
         localStorage.setItem("loggedInUsername", username);
         localStorage.setItem("loggedInUserId",response.data.player._id)
         navigate(from)
-        console.log("Login successful")
+        console.log(response.data)
       }
     } catch (error) {
       //handle errors here
