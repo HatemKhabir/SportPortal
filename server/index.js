@@ -59,7 +59,6 @@ const startServer = async () => {
       chat.users.forEach(user=>{
         if (user==newMessageReceived.data.senderID) return;
         socket.in(user).emit("message recieved",newMessageReceived) 
-        console.log(socket.in(user))
         console.log("message emitted")
       })
     })

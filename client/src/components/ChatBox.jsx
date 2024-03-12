@@ -27,12 +27,18 @@ function ChatBox({socket,selectedChat,messages,setMessages}) {
   console.log(messageData)
   if (message){
     try{
-      const data=await axios.post("http://localhost:8080/api/message",{
-       messageData,
+       const data = await axios.post(
+      "http://localhost:8080/api/message",
+      {
+        messageData,
+      },
+      {
         headers: {
           "Content-Type": "application/json",
-        }
-      })
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
+    );
      console.log("the data",data)
      socket.emit("new message",data)
      setMessages([...messages,message])

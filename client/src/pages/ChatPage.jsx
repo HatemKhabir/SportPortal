@@ -47,6 +47,7 @@ function ChatPage() {
   },[])
    
   useEffect(()=>{
+    
     socket.on("message recieved",(newMessageRecieved)=>{
       setMessages([...messages,newMessageRecieved])
     })

@@ -2,11 +2,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 import Modal from "../components/Modal";
 import friendShip from "../../../server/db/models/friendRelationModel.js";
 import { sendMessage } from "../../../server/controllers/messagingController.js";
+import { useNavigate } from "react-router-dom";
 
 function PlayerProfile() {
   const location = useLocation();
@@ -22,6 +23,7 @@ function PlayerProfile() {
   //useContext(UserContext) returns an object, and by using destructuring, you can extract the loggedInUsername property from that object directly.
   const [alreadyFriends, setAlreadyFriends] = useState(false);
   const [invitePending, setInvitePending] = useState(false);
+  const navigate=useNavigate();
   async function fetchUserData(value) {
     try {
       const response = await axios.get(
@@ -68,9 +70,6 @@ function PlayerProfile() {
     setIsModalOpen(false);
   };
 
-  const handleMessage = (username) => {
-    
-  };
 
   //in delete request you cant use request body like post or put instead use queries
   const handleDelete = async (username) => {
@@ -208,7 +207,7 @@ try {
         } else {
           component = (
             <div>
-              <button onClick={()=>sendMessage(username)}>Send Message</button>
+              <button onClick={()=>navigate(`/chats?userId=${username}`)}>Send Message</button>
               <button onClick={() => handleDelete(username)}>
                 Delete Friend
               </button>
