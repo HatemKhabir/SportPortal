@@ -1,6 +1,10 @@
+import { useContext, useEffect } from "react"
 import { Link } from "react-router-dom"
+import SocketContext from "../contexts/SocketContext"
 
 const Home = () => {
+  const socket=useContext(SocketContext)
+ 
   return (
     <>
       <Link to='/create-event'>

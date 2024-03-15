@@ -13,6 +13,8 @@ function App() {
   return (
     <AuthProvider>
       <UserProvider>
+        <SocketProvider>
+
         <Header/>
         <main>
           <Routes>
@@ -55,6 +57,7 @@ function App() {
           </Routes>
         
         </main>
+            </SocketProvider>
       </UserProvider>
     </AuthProvider>
   
