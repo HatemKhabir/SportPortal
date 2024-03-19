@@ -50,6 +50,7 @@ function ChatPage() {
 
 const selectChat=(chat)=>{
   setSelectedChat(chat)
+  navigate(`/chat?id=${chat._id}`)
   socket.emit('join_chatroom',{loggedInUserID,chat})
 }
   return(<>
@@ -59,7 +60,7 @@ const selectChat=(chat)=>{
            <AllChats setSelectedChat={selectChat}/>
     </div>
     <Box className="relative basis-full border-4">
-           <ChatBox messages={messages}  setMessages={setMessages} selectedChat={selectedChat}/>
+           <ChatBox selectedChat={selectedChat}/>
     </Box>
   </div>
   

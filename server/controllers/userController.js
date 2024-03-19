@@ -132,9 +132,9 @@ export const getFriendsList = async (req, res) => {
       const friendsList = await Promise.all(
         friends.map(async (friendship) => {
           if (friendship.sender.equals(user._id)) {
-            return await friendship.populate('recipient');
+            return await friendship.populate('recipient','username');
           } else {
-            return await friendship.populate('sender');
+            return await friendship.populate('sender','username');
           }
         })
       );

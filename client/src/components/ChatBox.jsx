@@ -6,8 +6,9 @@ import UserContext from "../contexts/UserContext";
 import axios from "axios";
 import io from "socket.io-client";
 import SocketContext from "../contexts/SocketContext";
+import { useLocation } from "react-router-dom";
 
-function ChatBox({ selectedChat, messages, setMessages }) {
+function ChatBox({selectedChat}) {
   const [
     loggedInUsername,
     setLoggedInUsername,
@@ -16,14 +17,19 @@ function ChatBox({ selectedChat, messages, setMessages }) {
     userChats,
     setChats,
   ] = useContext(UserContext);
+  const location = useLocation();
+  const urlQuery = new URLSearchParams(location.search);
+  const chatId = urlQuery.get("id");
   const socket = useContext(SocketContext);
-  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [message,setMessage]=useState("");
+  const [loading,setLoading]=useState(false);
   const handleTyping = (e) => {
     setMessage(e.target.value);
   };
   const sendMessage = async () => {
     const messageData = {
-      chatId: selectedChat._id,
+      chatId: chatId,
       messageContent: message,
       senderID: loggedInUserID,
     };
@@ -43,7 +49,7 @@ function ChatBox({ selectedChat, messages, setMessages }) {
           }
         );
         console.log("the data", data);
-        socket.emit("new_message", { data, selectedChat });
+        socket.emit("new_message", { data, chatId });
         setMessages((prevMessages) => [...prevMessages, data])
       } catch (e) {
         console.log(e);
@@ -53,17 +59,37 @@ function ChatBox({ selectedChat, messages, setMessages }) {
   };
 
   useEffect(() => {
+    const fetchMessages=async()=>{
+      try {
+        setLoading(true);
+       const response = await axios.get("http://localhost:8080/api/message", {
+       params: {
+         chatId: chatId,
+       },
+       headers: {
+         "Content-Type": "application/json",
+         Authorization:`Bearer ${localStorage.getItem("authToken")}`
+       },
+     }); 
+   setMessages(response.data)
+  setLoading(false)  
+  } catch (error) {
+       console.log(error)
+      }
+     }
+     fetchMessages();
     socket.on("message recieved", (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
     return () => socket.off("message recieved");
-  }, [socket, setMessages,messages]);
+  }, [socket,messages]);
 
  return (
   <div className="flex flex-col h-full">
     <div className="flex-grow border-4 relative">
+      {loading?(<h2>Loading...</h2>):(
       <ScrollableFeed>
-        {messages &&
+                {messages &&
           messages.map((m) => {
             return (
               <div key={m._id} style={{ display: "flex" }}>
@@ -94,7 +120,8 @@ function ChatBox({ selectedChat, messages, setMessages }) {
               </div>
             );
           })}
-      </ScrollableFeed>
+          </ScrollableFeed>
+      )}
     </div>
     <div className="flex items-center justify-between">
       <TextField
