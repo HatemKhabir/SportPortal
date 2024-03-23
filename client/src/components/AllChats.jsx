@@ -8,12 +8,12 @@ import { useNavigate } from "react-router-dom"
 
 function AllChats({setSelectedChat}) {
     const [loggedInUsername, 
-      setLoggedInUsername,
-      loggedInUserID,
-      setLoggedInUserID,
-      userChats,
-      setChats
-      ] = useContext(UserContext);
+    setLoggedInUsername,
+    loggedInUserID,
+    setLoggedInUserID,
+    selectedChats,
+    setChats
+    ] = useContext(UserContext);
       const navigate=useNavigate();
 
 useEffect(() => {
@@ -40,12 +40,12 @@ useEffect(() => {
  
   return (
     <>
-        {userChats && (
+        {selectedChats && (
       <ul
         role="list"
         className="mt-1 pl-5 w-full grid gap-2 sm:ml-1 sm:grid-cols-1 lg:grid-cols-1"
       >
-        {userChats.map((chat,index) => (
+        {selectedChats.map((chat,index) => (
           
           <li key={index} onClick={()=>{setSelectedChat(chat)}} className=" mb-2.5 sm:-ml-1 lg:ml-4 btn hover:cursor-pointer shadow-[0_4px_0_rgb(0,0,0)] hover:shadow-[0_4px_0px_rgb(0,0,0)] w-4/5 hover:translate-y-1 transition-all col-span-1 divide-y divide-gray-200 rounded-lg bg-white">
             <div className="flex  w-full items-center justify-between space-x-6 p-4">

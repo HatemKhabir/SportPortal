@@ -9,7 +9,7 @@ export const UserProvider = ({ children }) => {
   const [loggedInUserID,setLoggedInUserID]=useState(
     localStorage.getItem("loggedInUserId") || ""
   );
-   const [userChats,setChats]=useState([])
+   const [selectedChats,setChats]=useState([])
   useEffect(() => {
     const storedUsername = localStorage.getItem("loggedInUsername");
     const storedUserId = localStorage.getItem("loggedInUserId");
@@ -23,7 +23,7 @@ export const UserProvider = ({ children }) => {
     }
   }, [loggedInUsername, loggedInUserID]);
   return (
-    <UserContext.Provider value={[loggedInUsername, setLoggedInUsername,loggedInUserID,setLoggedInUserID,userChats,setChats]}>
+    <UserContext.Provider value={[loggedInUsername, setLoggedInUsername,loggedInUserID,setLoggedInUserID,selectedChats,setChats]}>
       {children}
     </UserContext.Provider>
   )

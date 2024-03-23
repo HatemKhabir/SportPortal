@@ -57,11 +57,13 @@ const startServer = async () => {
       });
 
       socket.on("new_message", (newMessageRecieved) => {
-        var chat = newMessageRecieved.selectedChat;
+        var chat = newMessageRecieved.selectedChats[0];
         var sentMsg=newMessageRecieved.data.data;
+        console.log("socket chat",chat)
+        console.log("sentMsg socket",sentMsg);
         chat.users.forEach((user) => {
           if (user._id==sentMsg.senderID._id) return;
-          socket.in(user._id).emit("message recieved", newMessageRecieved);
+          socket.in(user._id).emit("message recieved", newMessageRecieved.data.data);
         });
       });
     });

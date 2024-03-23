@@ -18,7 +18,6 @@ export const sendMessage=async(req,res)=>{
     await Message.populate(message,[{path:"senderID",select :"username"},{path:"chat"}])
     const findChat=await Chat.findOneAndUpdate({_id:chatId},{latestMsg:message})
     await Chat.populate(findChat,{path:"latestMsg",select:"content"})
-    console.log(message)
     if(message&&findChat)
     return res.status(201).json(newMessage);
     return res.status(403).json({message:"something wwong happend"})
